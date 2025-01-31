@@ -1,6 +1,5 @@
 import bme280
 import smbus2
-from time import sleep
 
 port = 1
 address = 0x76 # BME280 Address

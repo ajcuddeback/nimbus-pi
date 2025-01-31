@@ -1,4 +1,5 @@
 import bme280_sensor
+from time import sleep
 
 
 
