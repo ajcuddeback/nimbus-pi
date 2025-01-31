@@ -8,10 +8,17 @@ bus = smbus2.SMBus(port)
 
 bme280.load_calibration_params(bus,address)
 
-while True:
+def get_all_data():
+    return bme280.sample(bus, address)
+
+def sample_temp():
     bme280_data = bme280.sample(bus,address)
-    humidity  = bme280_data.humidity
-    pressure  = bme280_data.pressure
-    ambient_temperature = (9/5) * bme280_data.temperature + 32
-    print(humidity, pressure, ambient_temperature)
-    sleep(1)
+    return (9/5) * bme280_data.temperature + 32
+
+def sample_humidty():
+    bme280_data = bme280.sample(bus,address)
+    return bme280_data.humidity
+     
+def sample_pressure():
+    bme280_data = bme280.sample(bus,address)
+    return bme280_data.pressure
