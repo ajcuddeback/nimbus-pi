@@ -18,7 +18,7 @@ while True:
     data = {
         "temp": weather_data.temperature,
         "temp_format": "C",
-        "humidity": weather_data.humidty,
+        "humidity": weather_data.humidity,
         "humidity_format": "%",
         "pressure": weather_data.pressure,
         "pressure_format": "hPa",
