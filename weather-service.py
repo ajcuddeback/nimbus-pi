@@ -1,10 +1,13 @@
 import bme280_sensor
+from mqtt_client import MQTTClient
 from time import sleep
 import paho.mqtt.publish as publish
 from paho.mqtt.enums import MQTTProtocolVersion
 import logging
 
 logging.basicConfig(level=logging.INFO)
+
+mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 
 while True:
     try:
@@ -22,15 +25,7 @@ while True:
         "timestamp": weather_data.timestmap
     }
 
-    # TODO: Instead of using the convienence function, instead using the more advanced setup which allows for more fine grained control https://pypi.org/project/paho-mqtt/
-
-    # TODO: Consider placing logic for Paho Client in a singleton class. 
-    try:
-        publish.multiple(data, hostname="localhost", protocol=MQTTProtocolVersion.MQTTv5)
-    except Exception as mqtt_error:
-        logging.error(f"MQTT publish failed: {mqtt_error}")
-    else:
-        logging.info("Data published successfully.")
+    mqtt_client_instance.publish("weather/data", data)
 
     print(weather_data)
     print('-------------------------------------------------')
