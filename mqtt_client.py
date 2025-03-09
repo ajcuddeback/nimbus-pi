@@ -44,16 +44,16 @@ class MQTTClient:
             self.reconnect()
 
     def reconnect(self):
-        reconnectAttempts = 5
-        attemptsMade = 1
-        while attemptsMade <= reconnectAttempts:
+        max_reconnect_attempts = 5
+        attempts_made = 1
+        while attempts_made <= max_reconnect_attempts:
             try:
-                logging.info(f"Attempting to reconnect to MQTT Broker. Attempt {attemptsMade} of {reconnectAttempts}")
+                logging.info(f"Attempting to reconnect to MQTT Broker. Attempt {attempts_made} of {reconnectAttempts}")
                 self.client.reconnect()
                 return
             except Exception as e:
-                logging.error(f"Reconnection attempt {attempts + 1} failed: {e}")
-                attemptsMade += 1
+                logging.error(f"Reconnection attempt {attempts_made + 1} failed: {e}")
+                attempts_made += 1
                 time.sleep(5)
 
         critical_message = (
@@ -72,7 +72,7 @@ class MQTTClient:
         else:
             logging.error(f"Failed to connect, return code {rc}")
 
-    def on_disconnect(self, client, userdata, rc):
+    def on_disconnect(self, client, userdata, rc, properties):
         logging.warning("Disconnected from MQTT Broker.")
         self.reconnect()
 
