@@ -66,7 +66,7 @@ class MQTTClient:
         # Optionally raise an exception or exit
         raise ConnectionError(critical_message)
 
-    def on_connect(self, client, userdata, flags, rc):
+    def on_connect(self, client, userdata, flags, rc, properties):
         if rc == 0:
             logging.info("Connected to MQTT Broker!")
         else:
