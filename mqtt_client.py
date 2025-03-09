@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 class MQTTClient:
-    _intance = None
+    _instance = None
     _lock = threading.Lock()
 
     def __new__(cls, *args, **kwargs):
