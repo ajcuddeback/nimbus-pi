@@ -22,7 +22,7 @@ while True:
         "humidity_format": "%",
         "pressure": weather_data.pressure,
         "pressure_format": "hPa",
-        "timestamp": weather_data.timestmap
+        "timestamp": weather_data.timestamp
     }
 
     mqtt_client_instance.publish("weather/data", data)
