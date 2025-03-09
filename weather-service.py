@@ -22,6 +22,7 @@ while True:
         "timestamp": weather_data.timestmap
     }
 
+    # TODO: Instead of using the convienence function, instead using the more advanced setup which allows for more fine grained control https://pypi.org/project/paho-mqtt/
     try:
         publish.multiple(data, hostname="localhost", protocol=MQTTProtocolVersion.MQTTv5)
     except Exception as mqtt_error:
