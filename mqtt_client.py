@@ -11,7 +11,7 @@ class MQTTClient:
     _intance = None
     _lock = threading.Lock()
 
-     def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
         with cls._lock:  # Thread-safe singleton
             if cls._instance is None:
                 cls._instance = super(MQTTClient, cls).__new__(cls)
