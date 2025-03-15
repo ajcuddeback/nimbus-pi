@@ -16,17 +16,17 @@ while True:
         logging.error(f"Failed to retrieve sensor data! {sensor_error}")
 
     data = {
-        "temp": weather_data.temperature,
+        "temp": round(weather_data.temperature, 2),
         "temp_format": "C",
-        "humidity": weather_data.humidity,
+        "humidity": round(weather_data.humidity, 2),
         "humidity_format": "%",
-        "pressure": weather_data.pressure,
+        "pressure": round(weather_data.pressure, 2),
         "pressure_format": "hPa",
-        "timestamp": weather_data.timestamp.isoformat()
+        "timestamp": weather_data.timestamp.time()
     }
 
     mqtt_client_instance.publish("weather/data", data)
 
     print(weather_data)
     print('-------------------------------------------------')
-    sleep(1)
+    sleep(30)
