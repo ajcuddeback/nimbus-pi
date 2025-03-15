@@ -18,10 +18,9 @@ while True:
     data = {
         "temp": round(weather_data.temperature, 2),
         "temp_format": "C",
-        "humidity": round(weather_data.humidity, 2),
-        "humidity_format": "%",
-        "pressure": round(weather_data.pressure, 2),
-        "pressure_format": "hPa",
+        "hum": round(weather_data.humidity, 2),
+        "pr": round(weather_data.pressure, 2),
+        "pr_format": "hPa",
         "timestamp": round(weather_data.timestamp.timestamp())
     }
 
