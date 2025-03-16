@@ -5,7 +5,12 @@ import paho.mqtt.publish as publish
 from paho.mqtt.enums import MQTTProtocolVersion
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(messages)s', datefmt='%m/%d/%Y %I:%M:$S %p', level=logging.INFO)
+
+file_handler = logging.FileHandler('mqtt_logs.log');
+file_handler.setLevel(logging.DEBUG)
+
+logger = logging.getLogger(__main__)
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 
@@ -13,7 +18,7 @@ while True:
     try:
         weather_data = bme280_sensor.get_all_data()
     except Exception as sensor_error:
-        logging.error(f"Failed to retrieve sensor data! {sensor_error}")
+        logger.error(f"Failed to retrieve sensor data! {sensor_error}")
 
     data = {
         "temp": round(weather_data.temperature, 2),
