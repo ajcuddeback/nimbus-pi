@@ -44,6 +44,7 @@ class MQTTClient:
     def connect(self):
         try:
             self.client.connect(self.host, self.port, self.keepalive)
+            logger.info("Successfully connected to MQTT Client")
         except Exception as e:
             logger.error(f"Initial connection failed: {e}")
             self.reconnect()
