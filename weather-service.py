@@ -5,7 +5,7 @@ import paho.mqtt.publish as publish
 from paho.mqtt.enums import MQTTProtocolVersion
 import logging
 
-logging.basicConfig(format='%(asctime)s %(messages)s', datefmt='%m/%d/%Y %I:%M:$S %p', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 
 file_handler = logging.FileHandler('mqtt_logs.log');
 file_handler.setLevel(logging.DEBUG)
