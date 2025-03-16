@@ -9,7 +9,7 @@ logging.basicConfig(format='%(asctime)s %(messages)s', datefmt='%m/%d/%Y %I:%M:$
 file_handler = logging.FileHandler('mqtt_logs.log');
 file_handler.setLevel(logging.DEBUG)
 
-logger = logging.getLogger(__main__)
+logger = logging.getLogger(__name__)
 
 
 class MQTTClient:
