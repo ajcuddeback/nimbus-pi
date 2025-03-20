@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 
 file_handler = logging.FileHandler('mqtt_logs.log')
-file_handler.setLevel(logging.DEBUG)
+file_handler.setLevel(logging.INFO)
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 
