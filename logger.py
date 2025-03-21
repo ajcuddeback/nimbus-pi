@@ -22,7 +22,7 @@ class Logger:
             formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s', 
                                           datefmt='%m/%d/%Y %I:%M:%S %p')
 
-            console_handler.setLevel(logging.DEBUG)
+            console_handler.setLevel(logging.INFO)
             console_handler.setFormatter(formatter)
             file_handler.setLevel(logging.ERROR)
             file_handler.setFormatter(formatter)
