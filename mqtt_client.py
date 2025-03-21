@@ -1,8 +1,10 @@
 import paho.mqtt.client as mqtt
 import json
-import logging
+import logger_instance.log
 import threading
 import time
+logger_instance = Logger()
+
 
 class MQTTClient:
     _instance = None
@@ -36,9 +38,9 @@ class MQTTClient:
     def connect(self):
         try:
             self.client.connect(self.host, self.port, self.keepalive)
-            logging.info("Successfully connected to MQTT Client")
+            logger_instance.log.info("Successfully connected to MQTT Client")
         except Exception as e:
-            logging.error(f"Initial connection failed: {e}")
+            logger_instance.log.error(f"Initial connection failed: {e}")
             self.reconnect()
 
     def reconnect(self):
@@ -46,11 +48,11 @@ class MQTTClient:
         attemptsMade = 1
         while attemptsMade <= reconnectAttempts:
             try:
-                logging.info(f"Attempting to reconnect to MQTT Broker. Attempt {attemptsMade} of {reconnectAttempts}")
+                logger_instance.log.info(f"Attempting to reconnect to MQTT Broker. Attempt {attemptsMade} of {reconnectAttempts}")
                 self.client.reconnect()
                 return
             except Exception as e:
-                logging.error(f"Reconnection attempt {attempts + 1} failed: {e}")
+                logger_instance.log.error(f"Reconnection attempt {attempts + 1} failed: {e}")
                 attemptsMade += 1
                 time.sleep(5)
 
@@ -60,28 +62,28 @@ class MQTTClient:
             f"No weather data will be sent until service is restarted. "
             f"Check broker status and network connection immediately."
         )
-        logging.critical(critical_message)
+        logger_instance.log.critical(critical_message)
         # Optionally raise an exception or exit
         raise ConnectionError(critical_message)
 
     def on_connect(self, client, userdata, flags, rc, properties):
         if rc == 0:
-            logging.info("Connected to MQTT Broker!")
+            logger_instance.log.info("Connected to MQTT Broker!")
         else:
-            logging.error(f"Failed to connect, return code {rc}")
+            logger_instance.log.error(f"Failed to connect, return code {rc}")
 
     def on_disconnect(self, client, userdata, rc):
-        logging.warning("Disconnected from MQTT Broker.")
+        logger_instance.log.warning("Disconnected from MQTT Broker.")
         self.reconnect()
 
     def on_publish(self, client, userdata, mid):
-        logging.info(f"Message {mid} published successfully.")
+        logger_instance.log.info(f"Message {mid} published successfully.")
 
     def publish(self, topic, payload, qos=1, retain=True):
         try:
             result = self.client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
             status = result[0]
             if status != mqtt.MQTT_ERR_SUCCESS:
-                logging.error(f"Failed to publish message to {topic}: {status}")
+                logger_instance.log.error(f"Failed to publish message to {topic}: {status}")
         except Exception as e:
-            logging.error(f"Exception while publishing: {e}")
+            logger_instance.log.error(f"Exception while publishing: {e}")

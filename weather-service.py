@@ -1,14 +1,12 @@
 import bme280_sensor
 from mqtt_client import MQTTClient
+from logger import Logger
 from time import sleep
 import paho.mqtt.publish as publish
 from paho.mqtt.enums import MQTTProtocolVersion
 import logging
 
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
-
-file_handler = logging.FileHandler('mqtt_logs.log')
-file_handler.setLevel(logging.INFO)
+logger_instance = Logger()
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 
@@ -29,6 +27,6 @@ while True:
 
     mqtt_client_instance.publish("weather/data", data)
 
-    logging.info(weather_data)
-    logging.info('-------------------------------------------------')
+    logger_instance.log.info(weather_data)
+    logger_instance.log('-------------------------------------------------')
     sleep(30)
