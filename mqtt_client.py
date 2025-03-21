@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 import json
-import logger_instance.log
+from logger import Logger
 import threading
 import time
 
