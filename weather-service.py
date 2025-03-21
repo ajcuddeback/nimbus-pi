@@ -4,9 +4,6 @@ from logger import Logger
 from time import sleep
 from dotenv import load_dotenv
 import os
-import paho.mqtt.publish as publish
-from paho.mqtt.enums import MQTTProtocolVersion
-import logging
 
 load_dotenv()
 logger_instance = Logger(location=os.getenv('STATION_NAME'))
@@ -17,7 +14,7 @@ while True:
     try:
         weather_data = bme280_sensor.get_all_data()
     except Exception as sensor_error:
-        logger.error(f"Failed to retrieve sensor data! {sensor_error}")
+        logger_instance.error(f"Failed to retrieve sensor data! {sensor_error}")
 
     data = {
         "temp": round(weather_data.temperature, 2),
