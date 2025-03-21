@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import json
 from logger import Logger
 from dotenv import load_dotenv
+import os
 import threading
 import time
 

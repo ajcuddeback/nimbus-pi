@@ -3,6 +3,7 @@ from mqtt_client import MQTTClient
 from logger import Logger
 from time import sleep
 from dotenv import load_dotenv
+import os
 import paho.mqtt.publish as publish
 from paho.mqtt.enums import MQTTProtocolVersion
 import logging
