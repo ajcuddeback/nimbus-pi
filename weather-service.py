@@ -28,5 +28,5 @@ while True:
     mqtt_client_instance.publish("weather/data", data)
 
     logger_instance.log.info(weather_data)
-    logger_instance.log('-------------------------------------------------')
+    logger_instance.log.info('-------------------------------------------------')
     sleep(30)
