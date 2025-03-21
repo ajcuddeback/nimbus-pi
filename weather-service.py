@@ -34,4 +34,4 @@ while True:
 
     logger_instance.log.info(weather_data)
     logger_instance.log.info('-------------------------------------------------')
-    sleep(os.getenv('WEATHER_POLLING_RATE'))
+    sleep(int(os.getenv('WEATHER_POLLING_RATE')))
