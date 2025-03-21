@@ -3,12 +3,11 @@ import json
 import logger_instance.log
 import threading
 import time
-logger_instance = Logger()
-
 
 class MQTTClient:
     _instance = None
     _lock = threading.Lock()
+    logger_instance = Logger()
 
     def __new__(cls, *args, **kwargs):
         with cls._lock:  # Thread-safe singleton
