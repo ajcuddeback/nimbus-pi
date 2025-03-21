@@ -1,10 +1,12 @@
 import paho.mqtt.client as mqtt
 import json
 from logger import Logger
+from dotenv import load_dotenv
 import threading
 import time
 
-logger_instance = Logger()
+load_dotenv()
+logger_instance = Logger(location=os.getenv('STATION_NAME'))
 
 class MQTTClient:
     _instance = None
