@@ -9,9 +9,11 @@ class Logger:
             cls._instance._init_logger()
         return cls._instance
 
+    def __init__(self, location):
+        self.location = location
+
     def _init_logger(self):
-        # TODO: Change the log to use the location based on env var
-        self.log = logging.getLogger("weather_data")
+        self.log = logging.getLogger(self.location)
         self.log.setLevel(logging.INFO)
 
         if not self.log.hasHandlers():

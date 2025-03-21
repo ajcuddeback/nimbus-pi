@@ -2,10 +2,12 @@ import bme280_sensor
 from mqtt_client import MQTTClient
 from logger import Logger
 from time import sleep
+from dotenv import load_dotenv
 import paho.mqtt.publish as publish
 from paho.mqtt.enums import MQTTProtocolVersion
 import logging
 
+load_dotenv()
 logger_instance = Logger()
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
@@ -22,7 +24,9 @@ while True:
         "hum": round(weather_data.humidity, 2),
         "pr": round(weather_data.pressure, 2),
         "pr_format": "hPa",
-        "timestamp": round(weather_data.timestamp.timestamp())
+        "timestamp": round(weather_data.timestamp.timestamp()),
+        "coordinates": { "long": os.getenv('STATION_LONG'), "lat": os.getenv('STATION_LAT') },
+        "station_name": os.getenv('STATION_NAME')
     }
 
     mqtt_client_instance.publish("weather/data", data)
