@@ -8,7 +8,7 @@ from paho.mqtt.enums import MQTTProtocolVersion
 import logging
 
 load_dotenv()
-logger_instance = Logger(os.getenv('STATION_NAME'))
+logger_instance = Logger(location=os.getenv('STATION_NAME'))
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 
