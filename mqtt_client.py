@@ -12,6 +12,7 @@ logger_instance = Logger(location=os.getenv('STATION_NAME'))
 class MQTTClient:
     _instance = None
     _lock = threading.Lock()
+    _station_id = ""
 
     def __new__(cls, *args, **kwargs):
         with cls._lock:  # Thread-safe singleton
@@ -28,6 +29,7 @@ class MQTTClient:
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
         self.client.on_publish = self.on_publish
+        self.client.on_message = self.on_message
 
         self.host = host
         self.port = port
@@ -90,3 +92,12 @@ class MQTTClient:
                 logger_instance.log.error(f"Failed to publish message to {topic}: {status}")
         except Exception as e:
             logger_instance.log.error(f"Exception while publishing: {e}")
+
+    def on_message(self, client, userdata, msg):
+        try: 
+            print(f"Message received: Topic='{msg.topic}', Payload='{msg.payload.decode()}'")
+            if msg.topic == "stationId":
+                logger_instance.log.info(f"Got the station id: {msg.payload.decode()}")
+                _station_id = msg.payload.decode()
+        except Exception as e:
+            logger_instance.log.error(f"Failure on subscription: {e}")
