@@ -20,6 +20,7 @@ try:
         time.sleep(sample_rate)
         triggers_per_second = wind_count / sample_rate
         curent_wind_speed = triggers_per_second * mph_per_switch
+        wind_count = 0
         print(f"Current wind speed is {curent_wind_speed}")
 except KeyboardInterrupt:
     print("Exiting gracefully")
