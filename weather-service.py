@@ -42,13 +42,13 @@ mqtt_client_instance.publish("stationId/request", weather_station_data)
 
 weather_rate = int(os.getenv("WEATHER_POLLING_RATE"))
 
-while True:
-    if mqtt_client_instance._station_id == "":
-        logger_instance.log.warning("Station ID not populated yet")
-        sleep(2)
-        continue
+try:
+    while True:
+        if mqtt_client_instance._station_id == "":
+            logger_instance.log.warning("Station ID not populated yet")
+            sleep(2)
+            continue
 
-    try:
         logger_instance.log.info('Fetching data')
         weather_data = bme280_sensor.get_all_data()
         data = {
@@ -64,17 +64,19 @@ while True:
             "wind_speed_format": "mph"
         }
 
-        # mqtt_client_instance.publish("weather/data", data)
         logger_instance.log.info(data)
         logger_instance.log.info('-------------------------------------------------')
 
-    except Exception as sensor_error:
-        logger_instance.log.error(f"Failed to retrieve sensor data! {sensor_error}")
-    except KeyboardInterrupt:
-        wind_direction_singleton_instance.stop()
-        wind_direction_thread.join()
-        wind_speed_singleton_instance.stop()
-        wind_speed_thread.join()
-        logger_instance.log.info("Exiting gracefully")    
+        sleep(weather_rate)
 
-    sleep(weather_rate)
+except KeyboardInterrupt:
+    logger_instance.log.info("KeyboardInterrupt received. Stopping threads...")
+
+finally:
+    wind_direction_singleton_instance.stop()
+    wind_speed_singleton_instance.stop()
+
+    wind_direction_thread.join(timeout=5)
+    wind_speed_thread.join(timeout=5)
+
+    logger_instance.log.info("All threads joined. Exiting gracefully.")
