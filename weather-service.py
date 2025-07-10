@@ -60,7 +60,7 @@ while True:
             "timestamp": round(weather_data.timestamp.timestamp()),
             "stationId": mqtt_client_instance._station_id,
             "wind_direction": wind_direction_singleton_instance.direction,
-            # "wind_speed": wind_speed_instance.curent_wind_speed,
+            "wind_speed": wind_speed_singleton_instance.curent_wind_speed,
             "wind_speed_format": "mph"
         }
 
