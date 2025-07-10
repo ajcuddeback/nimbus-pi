@@ -49,10 +49,15 @@ class WindDirection:
 
     def run(self):
         self.running = True
-        while self.running:
-            wind_angle = self.get_value()
-            self.direction = self.convert_angle_to_direction(wind_angle)
-            logger_instance.log.info("Singleton weather direction running")
+        try:
+            while self.running:
+                wind_angle = self.get_value()
+                self.direction = self.convert_angle_to_direction(wind_angle)
+                logger_instance.log.info("Singleton weather direction running")
+        except Exception as e:
+            logger_instance.log.error(f"WindDirection thread error: {e}")
+        finally:
+            logger_instance.log.info("WindDirection thread exiting cleanly")
 
     def stop(self):
         logger_instance.log.info("Shutting wind direction thread down")
