@@ -8,7 +8,7 @@ import os
 load_dotenv()
 logger_instance = Logger(location=os.getenv('STATION_NAME'))
 
-required_envs = ['STATION_NAME', 'STATION_LON', 'STATION_LAT', 'STATION_CITY', 'STATION_STATE', 'WEATHER_POLLING_RATE']
+required_envs = ['STATION_LON', 'STATION_LAT', 'STATION_CITY', 'STATION_STATE', 'WEATHER_POLLING_RATE']
 for var in required_envs:
     if not os.getenv(var):
         raise EnvironmentError(f"Missing environment variable: {var}")
