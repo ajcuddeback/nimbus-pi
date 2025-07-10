@@ -35,11 +35,17 @@ class WindSpeed:
 
     def run(self):
         self.running = True
-        while self.running:
-            time.sleep(self._sample_rate)
-            triggers_per_second = self._wind_count / self._sample_rate
-            self.curent_wind_speed = triggers_per_second * self._mph_per_switch
-            self._wind_count = 0
+        try:
+            while self.running:
+                time.sleep(self._sample_rate)
+                triggers_per_second = self._wind_count / self._sample_rate
+                self.curent_wind_speed = triggers_per_second * self._mph_per_switch
+                self._wind_count = 0
+        except Exception as e:
+            logger_instance.log.error(f"WindSpeed thread error: {e}")
+        finally:
+            logger_instance.log.info("WindSpeed thread exiting cleanly")
+       
 
     def stop(self):
         logger_instance.log.info("Shutting wind speed thread down")
