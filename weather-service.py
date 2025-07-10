@@ -65,6 +65,7 @@ def main():
                 "wind_speed": wind_speed_instance.curent_wind_speed,
                 "wind_speed_format": "mph"
             }
+            mqtt_client_instance.publish("weather/data", data)
 
             logger_instance.log.info(data)
             logger_instance.log.info('-------------------------------------------------')
