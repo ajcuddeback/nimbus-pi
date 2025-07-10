@@ -44,6 +44,9 @@ class MQTTClient:
         try:
             self.client.connect(self.host, self.port, self.keepalive)
             logger_instance.log.info("Successfully connected to MQTT Client")
+            self.client.subscribe("stationId")
+            logger_instance.log.info("Successfully subscribed to station id topic")
+
         except Exception as e:
             logger_instance.log.error(f"Initial connection failed: {e}")
             self.reconnect()
