@@ -80,7 +80,5 @@ def main():
         wind_direction_thread.join(timeout=5)
         wind_speed_thread.join(timeout=5)
 
-        logger_instance.log.info("All threads stopped. Exiting.")
-
 if __name__ == "__main__":
     main()
