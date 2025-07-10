@@ -55,6 +55,7 @@ class WindDirection:
             logger_instance.log.info("Singleton weather direction running")
 
     def stop(self):
+        logger_instance.log.info("Shutting wind direction thread down")
         self.runing = False        
 
     def get_average(self, angles):

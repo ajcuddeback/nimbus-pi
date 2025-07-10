@@ -18,9 +18,12 @@ for var in required_envs:
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 wind_direction_singleton_instance = WindDirection()
-thread = threading.Thread(target=wind_direction_singleton_instance.run)
-thread.start()
-# wind_speed_instance = WindSpeed()
+wind_direction_thread = threading.Thread(target=wind_direction_singleton_instance.run)
+wind_direction_thread.start()
+
+wind_speed_singleton_instance = WindSpeed()
+wind_speed_thread = threading.Thread(target=wind_speed_singleton_instance.run)
+wind_speed_thread.start()
 
 # Allow for wind direction to populate
 sleep(5)
@@ -69,7 +72,9 @@ while True:
         logger_instance.log.error(f"Failed to retrieve sensor data! {sensor_error}")
     except KeyboardInterrupt:
         wind_direction_singleton_instance.stop()
-        thread.join()
+        wind_direction_thread.join()
+        wind_speed_singleton_instance.stop()
+        wind_speed_thread.join()
         logger_instance.log.info("Exiting gracefully")    
 
     sleep(weather_rate)
