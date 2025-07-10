@@ -54,7 +54,7 @@ def get_value(length=5):
     print("Measuring wind direction for 5 seconds")
     start_time = time.time()
 
-    while time.time() - start_time <= length;
+    while time.time() - start_time <= length
         wind = round(adc.value*3.3,1)
         if not wind in volts:
             print('unknown value' + str(wind))
