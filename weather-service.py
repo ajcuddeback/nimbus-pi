@@ -1,5 +1,7 @@
 import bme280_sensor
 from mqtt_client import MQTTClient
+from wind_direction import WindDirection
+from wind import WindSpeed
 from logger import Logger
 from time import sleep
 from dotenv import load_dotenv
@@ -14,6 +16,11 @@ for var in required_envs:
         raise EnvironmentError(f"Missing environment variable: {var}")
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
+wind_direction_instance = WindDirection()
+wind_speed_instance = WindSpeed()
+
+# Allow for wind direction to populate
+sleep(5)
 
 has_station_id = False
 
@@ -44,10 +51,13 @@ while True:
             "pr": round(weather_data.pressure, 2),
             "pr_format": "hPa",
             "timestamp": round(weather_data.timestamp.timestamp()),
-            "stationId": mqtt_client_instance._station_id
+            "stationId": mqtt_client_instance._station_id,
+            "wind_direction": wind_direction_instance.direction,
+            "wind_speed": wind_speed_instance.curent_wind_speed,
+            "wind_speed_format": "mph"
         }
 
-        mqtt_client_instance.publish("weather/data", data)
+        # mqtt_client_instance.publish("weather/data", data)
         logger_instance.log.info(weather_data)
         logger_instance.log.info('-------------------------------------------------')
 
