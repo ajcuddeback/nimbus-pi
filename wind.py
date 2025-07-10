@@ -30,7 +30,7 @@ class WindSpeed:
             super().__init__()
             self.running = False
             self._initialized = True
-            self._wind_speed_sensor.when_pressed = self.spin()
+            self._wind_speed_sensor.when_pressed = self.spin
 
 
     def run(self):
