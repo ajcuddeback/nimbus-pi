@@ -44,7 +44,7 @@ class WindSpeed:
     def stop(self):
         logger_instance.log.info("Shutting wind speed thread down")
         self.runing = False
-        self._wind_speed_sensor.when_pressed = NotImplemented
+        self._wind_speed_sensor.when_pressed = None
         self._wind_count = 0
         self.curent_wind_speed = 0
     

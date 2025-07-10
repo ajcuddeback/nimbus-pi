@@ -56,7 +56,7 @@ class WindDirection:
 
     def stop(self):
         logger_instance.log.info("Shutting wind direction thread down")
-        self.runing = False        
+        self.running = False        
 
     def get_average(self, angles):
         sin_sum = 0.0
@@ -88,6 +88,9 @@ class WindDirection:
         start_time = time.time()
 
         while time.time() - start_time <= length:
+            if not self.running:
+                logger_instance.log.info("WindDirection measurement interrupted by shutdown.")
+                break
             wind = round(self._adc.value*3.3,1)
             if wind not in self._volts:
                 logger_instance.log.info('unknown value' + str(wind))
