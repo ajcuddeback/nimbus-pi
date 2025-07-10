@@ -2,7 +2,6 @@ from gpiozero import MCP3008
 import time
 import math
 adc = MCP3008(channel=0)
-values = []
 count = 0
 volts = {
     0.4: 0.0,
@@ -22,8 +21,6 @@ volts = {
     0.2: 315.0,
     0.6: 337.5
 }
-
-
 
 def get_average(angles):
     sin_sum = 0.0
