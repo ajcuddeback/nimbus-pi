@@ -44,8 +44,6 @@ class MQTTClient:
         try:
             self.client.connect(self.host, self.port, self.keepalive)
             logger_instance.log.info("Successfully connected to MQTT Client")
-            self.client.subscribe("stationId")
-            logger_instance.log.info("Successfully subscribed to station id topic")
 
         except Exception as e:
             logger_instance.log.error(f"Initial connection failed: {e}")
@@ -75,6 +73,12 @@ class MQTTClient:
         raise ConnectionError(critical_message)
 
     def on_connect(self, client, userdata, flags, rc, properties):
+        try:
+            self.client.subscribe("stationId")
+            logger_instance.log.info("Subscribed to topic!")
+        except Exception as e:
+            logger_instance.log.error(f"Failed to subscribe to topic: {e}")
+
         if rc == 0:
             logger_instance.log.info("Connected to MQTT Broker!")
         else:
