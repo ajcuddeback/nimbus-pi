@@ -2,6 +2,12 @@ from gpiozero import Button
 from signal import pause  # <- This keeps the script running
 import time
 import threading
+import os
+from dotenv import load_dotenv
+from logger import Logger
+
+load_dotenv()
+logger_instance = Logger(location=os.getenv('STATION_NAME'))
 class WindSpeed:
     _instance = None
     _lock = threading.Lock()
@@ -33,11 +39,10 @@ class WindSpeed:
                 triggers_per_second = self._wind_count / self._sample_rate
                 self.curent_wind_speed = triggers_per_second * self._mph_per_switch
                 self._wind_count = 0
-                print(f"Current wind speed is {self.curent_wind_speed}")
         except KeyboardInterrupt:
-            print("Exiting gracefully")
+            logger_instance.log.info("Exiting gracefully")
 
     
     def spin(self):
         self._wind_count += 1
-        print("spin " + str(self._wind_count))
+        logger_instance.log.info("spin " + str(self._wind_count))

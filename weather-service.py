@@ -43,6 +43,7 @@ while True:
         continue
 
     try:
+        logger_instance.log.info('Fetching data')
         weather_data = bme280_sensor.get_all_data()
         data = {
             "temp": round(weather_data.temperature, 2),

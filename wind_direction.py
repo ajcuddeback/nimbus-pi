@@ -2,6 +2,12 @@ from gpiozero import MCP3008
 import time
 import math
 import threading
+import os
+from dotenv import load_dotenv
+from logger import Logger
+
+load_dotenv()
+logger_instance = Logger(location=os.getenv('STATION_NAME'))
 
 class WindDirection:
     _instance = None
@@ -67,13 +73,13 @@ class WindDirection:
 
     def get_value(self, length=5):
         data = []
-        print("Measuring wind direction for 5 seconds")
+        logger_instance.log.info("Measuring wind direction for 5 seconds")
         start_time = time.time()
 
         while time.time() - start_time <= length:
             wind = round(self._adc.value*3.3,1)
             if wind not in self._volts:
-                print('unknown value' + str(wind))
+                logger_instance.log.info('unknown value' + str(wind))
             else:
                 data.append(self._volts[wind])  
 
@@ -88,7 +94,9 @@ class WindDirection:
         return directions[index]
 
     def sample_wind_direction(self):
-        while True:
-            wind_angle = self.get_value()
-            self.direction = self.convert_angle_to_direction(wind_angle)
-            print(f"wind: {self.direction}")
+        try:
+            while True:
+                wind_angle = self.get_value()
+                self.direction = self.convert_angle_to_direction(wind_angle)
+        except KeyboardInterrupt:
+            logger_instance.log.info("Exiting gracefully")
