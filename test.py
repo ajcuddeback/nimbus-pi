@@ -7,9 +7,9 @@ count = 0
 volts = {
     0.4: 0.0,
     1.4: 22.5,
-    1.2: 45.0,
-    2.8: 67.5,
-    2.7: 90.0,
+    1.2: 45.0, 
+    2.8: 67.5, 
+    2.7: 90.0, 
     2.9: 112.5,
     2.2: 135.0,
     2.5: 157.5,
@@ -63,7 +63,16 @@ def get_value(length=5):
 
     return get_average(data)          
 
+def convert_angle_to_direction(angle):
+    directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+
+    angle = angle % 360
+    # Divide full circle into 8 slices of 45°
+    index = int((angle + 22.5) // 45) % 8
+    return directions[index]
+
 while True:
-    wind = get_value()
-    print(f"wind: {wind}")
+    wind_angle = get_value()
+    direction = convert_angle_to_direction(wind_angle)
+    print(f"wind: {direction}")
     
