@@ -5,6 +5,7 @@ from wind import WindSpeed
 from logger import Logger
 from time import sleep
 from dotenv import load_dotenv
+import threading
 import os
 
 load_dotenv()
@@ -16,8 +17,10 @@ for var in required_envs:
         raise EnvironmentError(f"Missing environment variable: {var}")
 
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
-wind_direction_instance = WindDirection()
-wind_speed_instance = WindSpeed()
+wind_direction_singleton_instance = WindDirection()
+thread = threading.Thread(target=wind_direction_singleton_instance.run)
+thread.start()
+# wind_speed_instance = WindSpeed()
 
 # Allow for wind direction to populate
 sleep(5)
@@ -54,7 +57,7 @@ while True:
             "timestamp": round(weather_data.timestamp.timestamp()),
             "stationId": mqtt_client_instance._station_id,
             "wind_direction": wind_direction_instance.direction,
-            "wind_speed": wind_speed_instance.curent_wind_speed,
+            # "wind_speed": wind_speed_instance.curent_wind_speed,
             "wind_speed_format": "mph"
         }
 
@@ -64,5 +67,9 @@ while True:
 
     except Exception as sensor_error:
         logger_instance.log.error(f"Failed to retrieve sensor data! {sensor_error}")
+    except KeyboardInterrupt:
+        wind_direction_singleton_instance.stop()
+        thread.join()
+        logger_instance.log.info("Exiting gracefully")    
 
     sleep(weather_rate)

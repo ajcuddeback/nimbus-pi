@@ -38,14 +38,24 @@ class WindDirection:
             if cls._instance is None:
                 cls._instance = super(WindDirection, cls).__new__(cls)
                 cls._instance._initialized = False
+                cls._instance.running = False
             return cls._instance
         
     def __init__(self):
-        if self._initialized:
-            return  # Already initialized, skip re-initialization
+        if not getattr(self, '_initialized', False):
+            super().__init__()
+            self.running = False
+            self._initialized = True
 
-        self.sample_wind_direction()
-        self._initialized = True  # Mark as initialized 
+    def run(self):
+        self.running = True
+        while self.running:
+            wind_angle = self.get_value()
+            self.direction = self.convert_angle_to_direction(wind_angle)
+            logger_instance.log.info("Singleton weather direction running")
+
+    def stop(self):
+        self.runing = False        
 
     def get_average(self, angles):
         sin_sum = 0.0
@@ -92,11 +102,3 @@ class WindDirection:
         # Divide full circle into 8 slices of 45°
         index = int((angle + 22.5) // 45) % 8
         return directions[index]
-
-    def sample_wind_direction(self):
-        try:
-            while True:
-                wind_angle = self.get_value()
-                self.direction = self.convert_angle_to_direction(wind_angle)
-        except KeyboardInterrupt:
-            logger_instance.log.info("Exiting gracefully")
