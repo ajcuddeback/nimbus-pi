@@ -101,10 +101,10 @@ class MQTTClient:
             logger_instance.log.error(f"Exception while publishing: {e}")
 
     def on_message(self, client, userdata, msg):
+        logger_instance.log.info(f"Received message on topic: {msg.topic} with payload: {msg.payload.decode()}")
         try: 
-            print(f"Message received: Topic='{msg.topic}', Payload='{msg.payload.decode()}'")
             if msg.topic == "stationId":
                 logger_instance.log.info(f"Got the station id: {msg.payload.decode()}")
-                _station_id = msg.payload.decode()
+                self._station_id = msg.payload.decode()
         except Exception as e:
             logger_instance.log.error(f"Failure on subscription: {e}")
