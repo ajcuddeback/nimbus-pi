@@ -8,75 +8,79 @@ from dotenv import load_dotenv
 import threading
 import os
 
-load_dotenv()
-logger_instance = Logger(location=os.getenv('STATION_NAME'))
+def main():
+    load_dotenv()
+    logger_instance = Logger(location=os.getenv('STATION_NAME'))
 
-required_envs = ['STATION_LON', 'STATION_LAT', 'STATION_CITY', 'STATION_STATE', 'WEATHER_POLLING_RATE']
-for var in required_envs:
-    if not os.getenv(var):
-        raise EnvironmentError(f"Missing environment variable: {var}")
+    # Validate required env vars
+    required_envs = ['STATION_LON', 'STATION_LAT', 'STATION_CITY', 'STATION_STATE', 'WEATHER_POLLING_RATE']
+    for var in required_envs:
+        if not os.getenv(var):
+            raise EnvironmentError(f"Missing environment variable: {var}")
 
-mqtt_client_instance = MQTTClient(host="localhost", port=1883)
-wind_direction_singleton_instance = WindDirection()
-wind_direction_thread = threading.Thread(target=wind_direction_singleton_instance.run)
-wind_direction_thread.start()
+    mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 
-wind_speed_singleton_instance = WindSpeed()
-wind_speed_thread = threading.Thread(target=wind_speed_singleton_instance.run)
-wind_speed_thread.start()
+    wind_direction_instance = WindDirection()
+    wind_speed_instance = WindSpeed()
 
-# Allow for wind direction to populate
-sleep(5)
+    wind_direction_thread = threading.Thread(target=wind_direction_instance.run)
+    wind_speed_thread = threading.Thread(target=wind_speed_instance.run)
 
-has_station_id = False
+    wind_direction_thread.start()
+    wind_speed_thread.start()
 
-weather_station_data = {
-    "lon": os.getenv("STATION_LON"),
-    "lat": os.getenv("STATION_LAT"),
-    "city": os.getenv("STATION_CITY"),
-    "state": os.getenv("STATION_STATE")
-}
+    try:
+        logger_instance.log.info("Waiting for wind sensor to initialize...")
+        sleep(5)
 
-logger_instance.log.info("Sending Station Id Request")
-mqtt_client_instance.publish("stationId/request", weather_station_data)
-
-weather_rate = int(os.getenv("WEATHER_POLLING_RATE"))
-
-try:
-    while True:
-        if mqtt_client_instance._station_id == "":
-            logger_instance.log.warning("Station ID not populated yet")
-            sleep(2)
-            continue
-
-        logger_instance.log.info('Fetching data')
-        weather_data = bme280_sensor.get_all_data()
-        data = {
-            "temp": round(weather_data.temperature, 2),
-            "temp_format": "C",
-            "hum": round(weather_data.humidity, 2),
-            "pr": round(weather_data.pressure, 2),
-            "pr_format": "hPa",
-            "timestamp": round(weather_data.timestamp.timestamp()),
-            "stationId": mqtt_client_instance._station_id,
-            "wind_direction": wind_direction_singleton_instance.direction,
-            "wind_speed": wind_speed_singleton_instance.curent_wind_speed,
-            "wind_speed_format": "mph"
+        weather_station_data = {
+            "lon": os.getenv("STATION_LON"),
+            "lat": os.getenv("STATION_LAT"),
+            "city": os.getenv("STATION_CITY"),
+            "state": os.getenv("STATION_STATE")
         }
 
-        logger_instance.log.info(data)
-        logger_instance.log.info('-------------------------------------------------')
+        logger_instance.log.info("Sending Station Id Request")
+        mqtt_client_instance.publish("stationId/request", weather_station_data)
 
-        sleep(weather_rate)
+        weather_rate = int(os.getenv("WEATHER_POLLING_RATE"))
 
-except KeyboardInterrupt:
-    logger_instance.log.info("KeyboardInterrupt received. Stopping threads...")
+        while True:
+            if mqtt_client_instance._station_id == "":
+                logger_instance.log.warning("Station ID not populated yet")
+                sleep(2)
+                continue
 
-finally:
-    wind_direction_singleton_instance.stop()
-    wind_speed_singleton_instance.stop()
+            logger_instance.log.info('Fetching data')
+            weather_data = bme280_sensor.get_all_data()
+            data = {
+                "temp": round(weather_data.temperature, 2),
+                "temp_format": "C",
+                "hum": round(weather_data.humidity, 2),
+                "pr": round(weather_data.pressure, 2),
+                "pr_format": "hPa",
+                "timestamp": round(weather_data.timestamp.timestamp()),
+                "stationId": mqtt_client_instance._station_id,
+                "wind_direction": wind_direction_instance.direction,
+                "wind_speed": wind_speed_instance.curent_wind_speed,
+                "wind_speed_format": "mph"
+            }
 
-    wind_direction_thread.join(timeout=5)
-    wind_speed_thread.join(timeout=5)
+            logger_instance.log.info(data)
+            logger_instance.log.info('-------------------------------------------------')
+            sleep(weather_rate)
 
-    logger_instance.log.info("All threads joined. Exiting gracefully.")
+    except KeyboardInterrupt:
+        logger_instance.log.info("KeyboardInterrupt received. Cleaning up...")
+
+    finally:
+        wind_direction_instance.stop()
+        wind_speed_instance.stop()
+
+        wind_direction_thread.join(timeout=5)
+        wind_speed_thread.join(timeout=5)
+
+        logger_instance.log.info("All threads stopped. Exiting.")
+
+if __name__ == "__main__":
+    main()
