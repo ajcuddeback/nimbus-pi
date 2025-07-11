@@ -86,9 +86,11 @@ def main():
     finally:
         wind_direction_instance.stop()
         wind_speed_instance.stop()
+        rainfall_instance.stop()
 
         wind_direction_thread.join(timeout=5)
         wind_speed_thread.join(timeout=5)
+        rainfall_thread.join(timeout=5)
 
 if __name__ == "__main__":
     main()
