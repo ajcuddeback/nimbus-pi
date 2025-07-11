@@ -2,6 +2,7 @@ import bme280_sensor
 from mqtt_client import MQTTClient
 from wind_direction import WindDirection
 from wind import WindSpeed
+from rainfall import Rainfall
 from logger import Logger
 from time import sleep
 from dotenv import load_dotenv
@@ -22,12 +23,15 @@ def main():
 
     wind_direction_instance = WindDirection()
     wind_speed_instance = WindSpeed()
+    rainfall_instance = Rainfall()
 
     wind_direction_thread = threading.Thread(target=wind_direction_instance.run)
     wind_speed_thread = threading.Thread(target=wind_speed_instance.run)
+    rainfall_thread = threading.Thread(target=rainfall_instance.run)
 
     wind_direction_thread.start()
     wind_speed_thread.start()
+    rainfall_thread.start()
 
     try:
         logger_instance.log.info("Waiting for wind sensor to initialize...")
@@ -53,6 +57,7 @@ def main():
 
             logger_instance.log.info('Fetching data')
             weather_data = bme280_sensor.get_all_data()
+            rainfall = rainfall_instance.get_current_rainfall()
             data = {
                 "temp": round(weather_data.temperature, 2),
                 "temp_format": "C",
@@ -63,8 +68,12 @@ def main():
                 "stationId": mqtt_client_instance._station_id,
                 "wind_direction": wind_direction_instance.direction,
                 "wind_speed": wind_speed_instance.curent_wind_speed,
-                "wind_speed_format": "mph"
+                "wind_speed_format": "mph",
+                "rainfall": rainfall,
+                "rainfall_format": "mm"
             }
+            rainfall_instance.reset_rainfall_count()
+
             mqtt_client_instance.publish("weather/data", data)
 
             logger_instance.log.info(data)
