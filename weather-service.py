@@ -1,6 +1,6 @@
 import bme280_sensor
 from mqtt_client import MQTTClient
-from DFRobot_AS3935_ordinary import begin_lightning_detection
+from lightning import Lightning
 from wind_direction import WindDirection
 from wind import WindSpeed
 from rainfall import Rainfall
@@ -25,6 +25,7 @@ def main():
     wind_direction_instance = WindDirection()
     wind_speed_instance = WindSpeed()
     rainfall_instance = Rainfall()
+    lightning_instance = None
 
     wind_direction_thread = threading.Thread(target=wind_direction_instance.run)
     wind_speed_thread = threading.Thread(target=wind_speed_instance.run)
@@ -56,7 +57,11 @@ def main():
                 sleep(2)
                 continue
 
-            begin_lightning_detection(mqtt_client_instance._station_id)
+            if lightning_instance == None:
+                lightning_instance = Lightning(mqtt_client_instance._station_id)
+                lightning_thread = threading.Thread(target=lightning_instance.run)
+                lightning_thread.start()
+
             logger_instance.log.info('Fetching data')
             weather_data = bme280_sensor.get_all_data()
             rainfall = rainfall_instance.get_current_rainfall()
@@ -93,6 +98,10 @@ def main():
         wind_direction_thread.join(timeout=5)
         wind_speed_thread.join(timeout=5)
         rainfall_thread.join(timeout=5)
+
+        if lightning_instance != None:
+            lightning_instance.stop()
+            lightning_thread.join(timeout=5)
 
 if __name__ == "__main__":
     main()
