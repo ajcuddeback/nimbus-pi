@@ -29,41 +29,43 @@ logger_instance = Logger(location=os.getenv('STATION_NAME'))
 mqtt_client_instance = MQTTClient(host="localhost", port=1883)
 station_id = ""
 
+#I2C address
+AS3935_I2C_ADDR1 = 0X01
+AS3935_I2C_ADDR2 = 0X02
+AS3935_I2C_ADDR3 = 0X03
+
+#Antenna tuning capcitance (must be integer multiple of 8, 8 - 120 pf)
+AS3935_CAPACITANCE = 96
+IRQ_PIN = 7
+
+#Indoor/outdoor mode selection
+AS3935_INDOORS = 0
+AS3935_OUTDOORS = 1
+AS3935_MODE = AS3935_INDOORS
+
+#Enable/disable disturber detection
+AS3935_DIST_DIS = 0
+AS3935_DIST_EN = 1
+AS3935_DIST = AS3935_DIST_EN
+
+GPIO.setmode(GPIO.BOARD)
+
+sensor = DFRobot_AS3935(AS3935_I2C_ADDR3, bus = 1)
+if (sensor.reset()):
+  print("init sensor sucess.")
+else:
+  print("init sensor fail")
+  while True:
+    pass
+
+#Configure sensor
+sensor.manual_cal(AS3935_CAPACITANCE, AS3935_MODE, AS3935_DIST)
+
 def begin_lightning_detection(id):
     
   global station_id
   station_id = id  
-  #I2C address
-  AS3935_I2C_ADDR1 = 0X01
-  AS3935_I2C_ADDR2 = 0X02
-  AS3935_I2C_ADDR3 = 0X03
 
-  #Antenna tuning capcitance (must be integer multiple of 8, 8 - 120 pf)
-  AS3935_CAPACITANCE = 96
-  IRQ_PIN = 7
-
-  #Indoor/outdoor mode selection
-  AS3935_INDOORS = 0
-  AS3935_OUTDOORS = 1
-  AS3935_MODE = AS3935_INDOORS
-
-  #Enable/disable disturber detection
-  AS3935_DIST_DIS = 0
-  AS3935_DIST_EN = 1
-  AS3935_DIST = AS3935_DIST_EN
-
-  GPIO.setmode(GPIO.BOARD)
-
-  sensor = DFRobot_AS3935(AS3935_I2C_ADDR3, bus = 1)
-  if (sensor.reset()):
-    print("init sensor sucess.")
-  else:
-    print("init sensor fail")
-    while True:
-      pass
-
-  #Configure sensor
-  sensor.manual_cal(AS3935_CAPACITANCE, AS3935_MODE, AS3935_DIST)
 
   # Connect the IRQ and GND pin to the oscilloscope.
   # uncomment the following sentences to fine tune the antenna for better performance.
