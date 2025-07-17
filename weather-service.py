@@ -1,6 +1,6 @@
 import bme280_sensor
 from mqtt_client import MQTTClient
-from DFRobot_AS3935_Lib import begin_lightning_detection
+from DFRobot_AS3935_ordinary import begin_lightning_detection
 from wind_direction import WindDirection
 from wind import WindSpeed
 from rainfall import Rainfall
