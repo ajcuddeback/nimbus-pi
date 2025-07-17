@@ -1,5 +1,6 @@
 import bme280_sensor
 from mqtt_client import MQTTClient
+from DFRobot_AS3935_Lib import begin_lightning_detection
 from wind_direction import WindDirection
 from wind import WindSpeed
 from rainfall import Rainfall
@@ -55,6 +56,7 @@ def main():
                 sleep(2)
                 continue
 
+            begin_lightning_detection(mqtt_client_instance._station_id)
             logger_instance.log.info('Fetching data')
             weather_data = bme280_sensor.get_all_data()
             rainfall = rainfall_instance.get_current_rainfall()
