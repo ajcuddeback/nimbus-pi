@@ -106,7 +106,8 @@ def callback_handle(channel):
       "stationId": station_id,
       "timestamp": time.time()
     }
-
+    
+    logger_instance.log.info(data)
     mqtt_client_instance.publish("weather/lightning", data)
 
   elif intSrc == 2:

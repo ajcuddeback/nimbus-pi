@@ -93,6 +93,7 @@ class MQTTClient:
 
     def publish(self, topic, payload, qos=1, retain=True):
         try:
+            logger_instance.log.info(f"Publishing Message on topic {topic}")
             result = self.client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
             status = result[0]
             if status != mqtt.MQTT_ERR_SUCCESS:
