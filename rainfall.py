@@ -44,7 +44,7 @@ class Rainfall:
     
     def count_up(self):
         self._current_mm_count += self._mm_per_tip
-        logger_instance.log.info("New mm count: " + str(self._current_mm_count))
+        # logger_instance.log.info("New mm count: " + str(self._current_mm_count))
 
     def reset_rainfall_count(self):
         self._current_mm_count = 0    
