@@ -93,7 +93,7 @@ class MQTTClient:
         else:
             logger_instance.log.error(f"Failed to connect, return code {rc}")
 
-    def on_disconnect(self, client, userdata, rc):
+    def on_disconnect(self, client, userdata, rc,  properties=None):
         logger_instance.log.warning(f"Disconnected from MQTT Broker with code {rc}")
 
     def on_publish(self, client, userdata, mid):
