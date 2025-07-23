@@ -56,4 +56,4 @@ class WindSpeed:
     
     def spin(self):
         self._wind_count += 1
-        logger_instance.log.info("spin " + str(self._wind_count))
+        # logger_instance.log.info("spin " + str(self._wind_count))
