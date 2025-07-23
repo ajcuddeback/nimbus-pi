@@ -26,6 +26,7 @@ class MQTTClient:
             return  # Already initialized, skip re-initialization
 
         self.client = mqtt.Client(protocol=mqtt.MQTTv5)
+        self.client.enable_logger(logger_instance.log)
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
         self.client.on_publish = self.on_publish
@@ -35,8 +36,12 @@ class MQTTClient:
         self.port = port
         self.keepalive = keepalive
 
+        self._stop_loop = threading.Event()
+
         self.connect()
-        self.client.loop_start()  # Start network loop in background thread
+
+        self.loop_thread = threading.Thread(target=self._start_loop, daemon=True)
+        self.loop_thread.start()
 
         self._initialized = True  # Mark as initialized
 
@@ -47,59 +52,66 @@ class MQTTClient:
 
         except Exception as e:
             logger_instance.log.error(f"Initial connection failed: {e}")
-            self.reconnect()
+            self._attempt_reconnect()
 
-    def reconnect(self):
-        reconnectAttempts = 5
-        attemptsMade = 1
-        while attemptsMade <= reconnectAttempts:
+    def _start_loop(self):
+        while not self._stop_loop.is_set():
             try:
-                logger_instance.log.info(f"Attempting to reconnect to MQTT Broker. Attempt {attemptsMade} of {reconnectAttempts}")
+                logger_instance.log.info("Starting MQTT loop_forever...")
+                self.client.loop_forever()
+            except Exception as e:
+                logger_instance.log.error(f"MQTT loop crashed: {e}", exc_info=True)
+                logger_instance.log.info("Retrying MQTT loop in 10 seconds...")
+                time.sleep(10)        
+
+    def _attempt_reconnect(self, max_attempts=5):
+        for attempt in range(1, max_attempts + 1):
+            try:
+                logger_instance.log.warning(f"Reconnect attempt {attempt} of {max_attempts}")
                 self.client.reconnect()
+                logger_instance.log.info("Reconnection successful")
                 return
             except Exception as e:
-                logger_instance.log.error(f"Reconnection attempt {attempts + 1} failed: {e}")
-                attemptsMade += 1
+                logger_instance.log.error(f"Reconnect failed: {e}")
                 time.sleep(5)
 
         critical_message = (
-            f"CRITICAL: Failed to reconnect to MQTT Broker after "
-            f"{self.max_reconnect_attempts} attempts. "
-            f"No weather data will be sent until service is restarted. "
-            f"Check broker status and network connection immediately."
+            f"CRITICAL: Failed to reconnect to MQTT Broker after {max_attempts} attempts. "
+            "Service may be unstable. Manual intervention may be required."
         )
         logger_instance.log.critical(critical_message)
-        # Optionally raise an exception or exit
         raise ConnectionError(critical_message)
-
+    
     def on_connect(self, client, userdata, flags, rc, properties):
-        try:
-            self.client.subscribe("stationId")
-            logger_instance.log.info("Subscribed to topic!")
-        except Exception as e:
-            logger_instance.log.error(f"Failed to subscribe to topic: {e}")
-
         if rc == 0:
             logger_instance.log.info("Connected to MQTT Broker!")
+            try:
+                self.client.subscribe("stationId")
+                logger_instance.log.info("Subscribed to topic: stationId")
+            except Exception as e:
+                logger_instance.log.error(f"Failed to subscribe: {e}")
         else:
             logger_instance.log.error(f"Failed to connect, return code {rc}")
 
     def on_disconnect(self, client, userdata, rc):
-        logger_instance.log.warning("Disconnected from MQTT Broker.")
-        self.reconnect()
+        logger_instance.log.warning(f"Disconnected from MQTT Broker with code {rc}")
 
     def on_publish(self, client, userdata, mid):
         logger_instance.log.info(f"Message {mid} published successfully.")
 
     def publish(self, topic, payload, qos=1, retain=True):
         try:
-            logger_instance.log.info(f"Publishing Message on topic {topic}")
+            if not self.client.is_connected():
+                logger_instance.log.warning("Client not connected. Skipping publish.")
+                return
+
+            logger_instance.log.info(f"Publishing to topic {topic}")
             result = self.client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
-            status = result[0]
+            status = result.rc
             if status != mqtt.MQTT_ERR_SUCCESS:
-                logger_instance.log.error(f"Failed to publish message to {topic}: {status}")
+                logger_instance.log.error(f"Failed to publish to {topic}: status {status}")
         except Exception as e:
-            logger_instance.log.error(f"Exception while publishing: {e}")
+            logger_instance.log.error(f"Exception during publish: {e}", exc_info=True)
 
     def on_message(self, client, userdata, msg):
         logger_instance.log.info(f"Received message on topic: {msg.topic} with payload: {msg.payload.decode()}")
@@ -109,3 +121,9 @@ class MQTTClient:
                 self._station_id = msg.payload.decode()
         except Exception as e:
             logger_instance.log.error(f"Failure on subscription: {e}")
+
+    def stop(self):
+        logger_instance.log.info("Stopping MQTT client loop...")
+        self._stop_loop.set()
+        self.client.disconnect()
+        self.loop_thread.join(timeout=10)        

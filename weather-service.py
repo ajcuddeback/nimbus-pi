@@ -99,6 +99,8 @@ def main():
         wind_speed_thread.join(timeout=5)
         rainfall_thread.join(timeout=5)
 
+        mqtt_client_instance.stop()
+
         if lightning_instance != None:
             lightning_instance.stop()
             lightning_thread.join(timeout=5)
