@@ -73,10 +73,10 @@ def main():
                 "pr_format": "hPa",
                 "timestamp": round(weather_data.timestamp.timestamp()),
                 "stationId": mqtt_client_instance._station_id,
-                "wind_direction": wind_direction_instance.direction,
-                "wind_speed": wind_speed_instance.curent_wind_speed,
+                "wind_direction": round(wind_direction_instance.direction, 2),
+                "wind_speed": round(wind_speed_instance.curent_wind_speed, 2),
                 "wind_speed_format": "mph",
-                "rainfall": rainfall,
+                "rainfall": round(rainfall, 2),
                 "rainfall_format": "mm"
             }
             rainfall_instance.reset_rainfall_count()

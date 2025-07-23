@@ -52,7 +52,7 @@ class WindDirection:
         try:
             while self.running:
                 wind_angle = self.get_value()
-                self.direction = self.convert_angle_to_direction(wind_angle)
+                self.direction = wind_angle
                 # logger_instance.log.info("Singleton weather direction running")
         except Exception as e:
             logger_instance.log.error(f"WindDirection thread error: {e}")

@@ -130,7 +130,7 @@ class Lightning:
           "distanceFormat": "km",
           "intensity": lightning_energy_val,
           "stationId": self.station_id,
-          "timestamp": time.time()
+          "timestamp": round(time.time())
         }
         
         logger_instance.log.info(data)
@@ -139,6 +139,4 @@ class Lightning:
       elif intSrc == 2:
         logger_instance.log.info('Disturber discovered!')
       elif intSrc == 3:
-        logger_instance.log.info('Noise level too high!')
-      else:
-        pass        
+        logger_instance.log.info('Noise level too high!')      
