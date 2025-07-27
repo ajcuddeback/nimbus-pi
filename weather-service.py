@@ -74,7 +74,7 @@ def main():
                 "timestamp": round(weather_data.timestamp.timestamp()),
                 "stationId": mqtt_client_instance._station_id,
                 "wind_direction": round(wind_direction_instance.direction, 2),
-                "wind_speed": round(wind_speed_instance.get_wind_speed_average, 2),
+                "wind_speed": round(wind_speed_instance.get_wind_speed_average(), 2),
                 "wind_speed_format": "mph",
                 "rainfall": round(rainfall, 2),
                 "rainfall_format": "mm"
